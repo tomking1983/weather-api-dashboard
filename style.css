@@ -1,0 +1,68 @@
+body {
+  background-color: #f2f2f2;
+  font-family: "Roboto", sans-serif;
+}
+
+/* Hero */
+.hero {
+  background: rgb(90, 174, 90);
+}
+
+.title {
+  color: whitesmoke;
+}
+
+/* Get Weather */
+#submit {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+/* Previous Searches */
+
+.table-box {
+  background-color: #a5a6a7;
+}
+
+.button.is-danger {
+    background-color: red;
+}
+
+/* Forecast */
+
+#forecast-section {
+  padding-top: 15px;
+}
+
+.city-data {
+  min-height: 320px;
+}
+
+#weather {
+  background-color: orangered;
+}
+
+tr {
+  margin: 5px;
+}
+
+/* 5 Day section */
+
+.card {
+  background-color: #669fee;
+  margin: 2px;
+  min-height: 320px;
+}
+
+/* Media Queries */
+
+@media only screen and (max-width: 720px) {
+  .column {
+    margin: 2px;
+    padding: 0 20px 0 20px;
+  }
+
+  .card-content {
+    padding: 20px;
+  }
+}
