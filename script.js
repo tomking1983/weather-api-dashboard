@@ -1,105 +1,82 @@
+
 $(document).ready(function () {
 
-    // use moment to show current date and time
-    let currentDayTime = moment().format('dddd, MMMM Do YYYY, h:mm:ss a');
+    // add date and time using moment.js
+    let now = moment();
+    let date = now.format('dddd, MMMM Do YYYY');
+    let time = now.format('h:mm:ss a');
+    $('#date').text(date);
+    $('#time').text(time);
 
-    // add days to the current day
-    let day1 = moment().add(1, 'days').format('dddd');
-    let day2 = moment().add(2, 'days').format('dddd');
-    let day3 = moment().add(3, 'days').format('dddd');
-    let day4 = moment().add(4, 'days').format('dddd');
-    let day5 = moment().add(5, 'days').format('dddd');
+    // update time every second
+    setInterval(function () {
+        let now = moment();
+        let time = now.format('h:mm:ss a');
+        $('#time').text(time);
+    }, 1000);
 
-    // set global variables
-    let city;
-    let cityList;
 
-    // function that loads most recent city from local storage
-    function loadRecentCity() {
-        let lastSearch = localStorage.getItem('mostRecent');
-        if (lastSearch) {
-            city = lastSearch;
-            search();
-        } else {
-            city = 'London';
-            search();
-        }
-    }
+  let city = 'London';
+  let country = 'GB';
 
-    loadRecentCity();
+  // Get the weather data from the API
+  $.ajax({
+    url: 'https://api.openweathermap.org/geo/1.0/direct?q=' + city + '&limit=1&appid=9f052728837492dee784a6ea4d36509f'
+  }).done(function (response) {
+    let lat = response[0].lat;
+    let lon = response[0].lon;
+    console.log(lat);
+    console.log(lon);
 
-    // function that loads recently searched cities from local storage
-    function loadRecentCityList() {
-        let recentCityList = JSON.parse(localStorage.getitem('cityList'));
-        if (recentCityList) {
-            cityList = recentCityList;
-        } else {
-            cityList = [];
-        }
-    }
+    $.ajax({
+      url: 'https://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + '&units=metric&appid=9f052728837492dee784a6ea4d36509f'
+    }).then(function (response) {
+      console.log(response.list[0].main.temp);
+      console.log(response.list[0].main.feels_like);
+      console.log(response.list[0].main.humidity);
+      console.log(response.list[0].wind.speed);
+      console.log(response.list[0].weather[0].description);
+      console.log(response.list[0].weather[0].icon);
 
-    loadRecentCityList();
+      let temp = response.list[0].main.temp;
+      let feelsLike = response.list[0].main.feels_like;
+      let humidity = response.list[0].main.humidity;
+      let windSpeed = response.list[0].wind.speed;
+      let description = response.list[0].weather[0].description;
+      let icon = response.  list[0].weather[0].icon;
 
-    // event handler for search button
-    $('#submit').on('click', function (event) => {
-        event.preventDefault();
-        getCity();
-        search();
-        $('#city-input').val('');
-        listCityList();
-    });
+      // let temp = response.current.temp;
+      // let feelsLike = response.current.feels_like;
+      // let humidity = response.current.humidity;
+      // let windSpeed = response.current.wind_speed;
+      // let description = response.current.weather[0].description;
+      // let icon = response.current.weather[0].icon;
 
-    // function save searched cityList to local storage
-    function saveToLocalStorage() {
-        localStorage.setItem('mostRecent', city);
-        cityList.push(city);
-        localStorage.setItem('cityList', JSON.stringify(cityList));
-    }
+      // put the data in the html
+      $('#temp').text("Temperature: " + temp);
+      $('#temp').append('&#8451;');
+      $('#feels-like').text(feelsLike);
+      $('#humidity').text("Humidity: " + humidity + " RH");
+      $('#wind-speed').text("Wind Speed: " + windSpeed + " mph");
+      $('#city-cond').text("Current Conditions: " + description);
 
-    // function that gets city from input field
-    function getCity() {
-        city = $('#city-input').val();
-        if (city && cityList.includes(city) === false) {
-            saveToLocalStorage();
-            return city;
-        } else if (!city) {
-            alert('Please enter a city');
-        }
-    }
-
-    // search API for city
-    function search() {
-        let queryURL = 'https://api.openweathermap.org/data/2.5/weather?q=' + city + '&appid=7fb4c3a331d8f5c01c349dc0e1c06add';
-        let coords = [];
-
-        $.ajax({
-            url: queryURL,
-            method: 'GET'
-        }).then(function (response) {
-            coords.push(response.coord.lat);
-            coords.push(response.coord.lon);
-            let cityName = response.name;
-            let cityCond = response.weather[0].description;
-            let cityTemp = response.main.temp;
-            let cityHum = response.main.humidity;
-            let cityWind = response.wind.speed;
-            let icon = response.weather[0].icon;
-            $('#icon').html('<img src='http://openweathermap.org/img/wn/${icon}.png'>');
-            $(#city-name).html(cityName + " " + "(" + currentDayTime + ")");
-            $("#city-cond").text("Current Conditions: " + cityCond);
-      $("#temp").text("Current Temp (F): " + cityTemp.toFixed(1));
-      $("#humidity").text("Humidity: " + cityHum + "%");
-      $("#wind-speed").text("Wind Speed: " + cityWind + "mph");
-      $("#date1").text(day1);
-      $("#date2").text(day2);
-      $("#date3").text(day3);
-      $("#date4").text(day4);
-      $("#date5").text(day5);
-
-      getUV(response.coord.lat, response.coord.lon);
-    }).fail(function (){
-      alert("Data not available")
-    });
-    }
-
+    //   add icon to icon div
+        $('#icon').html('<img src="http://openweathermap.org/img/w/' + icon + '.png" alt="weather icon">');
+    // degrees celcius
     
+
+        // city name
+        $('#city-name').text(city + ', ' + country);
+
+      
+    }
+    );
+   
+
+  });
+
+
+
+});
+
+
