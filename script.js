@@ -8,6 +8,9 @@ $(document).ready(function () {
     $('#date').text(date);
     $('#time').text(time);
 
+    // merge date and time
+    $('#date-time').text(date + ' ' + time);
+
     // update time every second
     setInterval(function () {
         let now = moment();
