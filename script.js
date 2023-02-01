@@ -1,85 +1,216 @@
+'use strict';
 
 $(document).ready(function () {
 
-    // add date and time using moment.js
-    let now = moment();
-    let date = now.format('dddd, MMMM Do YYYY');
-    let time = now.format('h:mm:ss a');
-    $('#date').text(date);
-    $('#time').text(time);
+  //Pulls the current date
+  let dateTime = moment().format("DD/MM/YYYY, h:mm:ss a");
+  // update time every second
+  setInterval(function () {
+    dateTime = moment().format("DD/MM/YYYY, h:mm:ss a");
+    $("#date-time").text(dateTime);
+  }, 1000);
+  
 
-    // merge date and time
-    $('#date-time').text(date + ' ' + time);
-
-    // update time every second
-    setInterval(function () {
-        let now = moment();
-        let time = now.format('h:mm:ss a');
-        $('#time').text(time);
-    }, 1000);
+  
+  //adds days to moment for 5 day forecast
+  let day1 = moment().add(1, "days").format("DD/MM/YYYY");
+  let day2 = moment().add(2, "days").format("DD/MM/YYYY");
+  let day3 = moment().add(3, "days").format("DD/MM/YYYY");
+  let day4 = moment().add(4, "days").format("DD/MM/YYYY");
+  let day5 = moment().add(5, "days").format("DD/MM/YYYY");
 
 
-  let city = 'London';
-  let country = 'GB';
 
-  // Get the weather data from the API
-  $.ajax({
-    url: 'https://api.openweathermap.org/geo/1.0/direct?q=' + city + '&limit=1&appid=9f052728837492dee784a6ea4d36509f'
-  }).done(function (response) {
-    let lat = response[0].lat;
-    let lon = response[0].lon;
-    console.log(lat);
-    console.log(lon);
+ //global variables
+  let city;
+  let cities;
 
-    $.ajax({
-      url: 'https://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + '&units=metric&appid=9f052728837492dee784a6ea4d36509f'
-    }).then(function (response) {
-      console.log(response.list[0].main.temp);
-      console.log(response.list[0].main.feels_like);
-      console.log(response.list[0].main.humidity);
-      console.log(response.list[0].wind.speed);
-      console.log(response.list[0].weather[0].description);
-      console.log(response.list[0].weather[0].icon);
-
-      let temp = response.list[0].main.temp;
-      let feelsLike = response.list[0].main.feels_like;
-      let humidity = response.list[0].main.humidity;
-      let windSpeed = response.list[0].wind.speed;
-      let description = response.list[0].weather[0].description;
-      let icon = response.  list[0].weather[0].icon;
-
-      // let temp = response.current.temp;
-      // let feelsLike = response.current.feels_like;
-      // let humidity = response.current.humidity;
-      // let windSpeed = response.current.wind_speed;
-      // let description = response.current.weather[0].description;
-      // let icon = response.current.weather[0].icon;
-
-      // put the data in the html
-      $('#temp').text("Temperature: " + temp);
-      $('#temp').append('&#8451;');
-      $('#feels-like').text(feelsLike);
-      $('#humidity').text("Humidity: " + humidity + " RH");
-      $('#wind-speed').text("Wind Speed: " + windSpeed + " mph");
-      $('#city-cond').text("Current Conditions: " + description);
-
-    //   add icon to icon div
-        $('#icon').html('<img src="http://openweathermap.org/img/w/' + icon + '.png" alt="weather icon">');
-    // degrees celcius
-    
-
-        // city name
-        $('#city-name').text(city + ', ' + country);
-
-      
+ //function to load most recently searched city from local storage if nothing in local storage then default to Oswestry
+  function loadMostRecent() {
+    let recentCity = localStorage.getItem("mostRecent");
+    if (recentCity) {
+      city = recentCity;
+      search();
+    } else {
+      city = "Oswestry";
+      search();
     }
-    );
-   
+  }
 
+  loadMostRecent()
+
+//function to load recently searched cities from local storage
+  function loadRecentCities() {
+    let recentCities = JSON.parse(localStorage.getItem("cities"));
+
+    if (recentCities) {
+      cities = recentCities;
+    } else {
+      cities = [];
+    }
+  }
+
+  loadRecentCities()
+
+  //event handler for search city button
+  $("#submit").on("click", (e) => {
+    e.preventDefault();
+    getCity();
+    search();
+    $("#city-input").val("");
+    listCities();
   });
 
 
+  //function to save searched cities to local storage
+  function saveToLocalStorage() {
+    localStorage.setItem("mostRecent", city);
+    cities.push(city);
+    localStorage.setItem("cities", JSON.stringify(cities));
+  }
+
+  //function to retrieve user inputted city name
+  function getCity() {
+    city = $("#city-input").val();
+    if (city && cities.includes(city) === false) {
+      saveToLocalStorage();
+      return city;
+    } else if (!city) {
+      alert("Please enter a valid city");
+    }
+  }
+
+
+  // searches the API for the chosen city
+  function search() {
+    
+    let queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=metric&appid=9f052728837492dee784a6ea4d36509f";
+    let coords = [];
+
+    $.ajax({
+      url: queryURL,
+      method: "GET",
+    }).then(function (response) {
+      
+      coords.push(response.coord.lat);
+      coords.push(response.coord.lon);
+      let cityName = response.name;
+      let cityCond = response.weather[0].description.toUpperCase();
+      let cityTemp = response.main.temp;
+      let cityHum = response.main.humidity;
+      let cityWind = response.wind.speed;
+      let icon = response.weather[0].icon;
+      $("#icon").html(
+        `<img src="http://openweathermap.org/img/wn/${icon}@2x.png">`
+      );
+      $("#city-name").html(cityName);
+      $("#city-cond").text("Current Conditions: " + cityCond);
+      $("#temp").text("Current Temp (F): " + cityTemp.toFixed(1));
+      $("#humidity").text("Humidity: " + cityHum + "%");
+      $("#wind-speed").text("Wind Speed: " + cityWind + "mph");
+      $("#date1").text(day1);
+      $("#date2").text(day2);
+      $("#date3").text(day3);
+      $("#date4").text(day4);
+      $("#date5").text(day5);
+
+      get5DayWeather(response.coord.lat, response.coord.lon);
+    }).fail(function (){
+      alert("Could not get data")
+    });
+
+    //Function to get 5-day forecast
+    function get5DayWeather(lat, lon) {
+     
+        
+      $.ajax({
+        url: "https://api.openweathermap.org/data/3.0/onecall?lat=" + lat + "&lon=" + lon + "&appid=9f052728837492dee784a6ea4d36509f",
+        method: "GET",
+      }).then(function (response) {
+
+
+
+        //5 day temp variables
+        let day1temp = response.daily[1].temp.max;
+        let day2temp = response.daily[2].temp.max;
+        let day3temp = response.daily[3].temp.max;
+        let day4temp = response.daily[4].temp.max;
+        let day5temp = response.daily[5].temp.max;
+
+        $("#temp1").text("Temp(F):" + " " + day1temp.toFixed(1));
+        $("#temp2").text("Temp(F):" + " " + day2temp.toFixed(1));
+        $("#temp3").text("Temp(F):" + " " + day3temp.toFixed(1));
+        $("#temp4").text("Temp(F):" + " " + day4temp.toFixed(1));
+        $("#temp5").text("Temp(F):" + " " + day5temp.toFixed(1));
+
+        //5 day humidity variables
+        let day1hum = response.daily[1].humidity;
+        let day2hum = response.daily[2].humidity;
+        let day3hum = response.daily[3].humidity;
+        let day4hum = response.daily[4].humidity;
+        let day5hum = response.daily[5].humidity;
+
+        $("#hum1").text("Hum:" + " " + day1hum + "%");
+        $("#hum2").text("Hum:" + " " + day2hum + "%");
+        $("#hum3").text("Hum:" + " " + day3hum + "%");
+        $("#hum4").text("Hum:" + " " + day4hum + "%");
+        $("#hum5").text("Hum:" + " " + day5hum + "%");
+
+        //5 day icons variables
+        let icon1 = response.daily[1].weather[0].icon;
+        let icon2 = response.daily[2].weather[0].icon;
+        let icon3 = response.daily[3].weather[0].icon;
+        let icon4 = response.daily[4].weather[0].icon;
+        let icon5 = response.daily[5].weather[0].icon;
+        
+        $("#icon1").html(
+          `<img src="http://openweathermap.org/img/wn/${icon1}@2x.png">`
+        );
+        $("#icon2").html(
+          `<img src="http://openweathermap.org/img/wn/${icon2}@2x.png">`
+        );
+        $("#icon3").html(
+          `<img src="http://openweathermap.org/img/wn/${icon3}@2x.png">`
+        );
+        $("#icon4").html(
+          `<img src="http://openweathermap.org/img/wn/${icon4}@2x.png">`
+        );
+        $("#icon5").html(
+          `<img src="http://openweathermap.org/img/wn/${icon5}@2x.png">`
+        );
+      });
+    }
+  }
+//function to add recently searched cities to page
+  function listCities() {
+    $("#cityList").text("");
+    cities.forEach((city) => {
+      $("#cityList").prepend("<tr><td>" + city + "</td></tr>");
+    });
+  }
+
+  listCities();
+//event handler for recently searched cities in table
+  $(document).on("click", "td", (e) => {
+    e.preventDefault();
+    let listedCity = $(e.target).text();
+    city = listedCity;
+    search();
+  });
+//event handler for clear button
+  $("#clr-btn").click(() => {
+    localStorage.removeItem("cities");
+    loadRecentCities();
+    listCities();
+    location.reload();
+  });
+
+    // When clear button has been clicked load weather data for oswestry
+    if (cities.length === 0) {
+      city = "Oswestry";
+      search();
+    }
+  
 
 });
-
 
