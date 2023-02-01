@@ -46,6 +46,11 @@ tr {
   margin: 5px;
 }
 
+/* change mouse pointer to grab when hover on td element */
+td {
+  cursor: pointer;
+}
+
 /* 5 Day section */
 
 .card {
