@@ -220,7 +220,7 @@ $(document).ready(function () {
 
   }
   if (time >= 18 || time < 6) {
-    $("#weather").css("background-image", "url(assets/images/night.jpg)");
+    $("#weather").css("background-image", "url(assets/img/night.jpg)");
     $("body").css("background-image", "url(assets/img/bg-night.jpg)");
 
   }
@@ -237,5 +237,11 @@ $(document).ready(function () {
 
   // change text in td to uppercase
   $("td").css("text-transform", "uppercase");
+
+  // if nighttime change the color of text in p tag of footer to white
+  if (time >= 18 || time < 6) {
+    $("p").css("color", "white");
+    $("h2").css("color", "white");
+  }
 
 });

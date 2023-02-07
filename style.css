@@ -48,7 +48,7 @@ td {
 #weather {
 /* background of clouds.jpg in assets/img folder with a transparency */
   background: url(assets/img/clouds.jpg) no-repeat center center fixed;
-  background-size: cover;
+  /* background-size: cover; */
   color: white;
   padding: 20px;
 }
