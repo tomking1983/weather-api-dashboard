@@ -211,4 +211,31 @@ $(document).ready(function () {
     city = "Oswestry";
     search();
   }
+
+  // change the background image of #weather based on the current time
+  let time = new Date().getHours();
+  if (time >= 6 && time < 18) {
+    $("#weather").css("background-image", "url(assets/img/day.jpg)");
+    $("body").css("background-image", "url(assets/img/bg-day.jpg)");
+
+  }
+  if (time >= 18 || time < 6) {
+    $("#weather").css("background-image", "url(assets/images/night.jpg)");
+    $("body").css("background-image", "url(assets/img/bg-night.jpg)");
+
+  }
+  // if daytime change color of #date-time, #city-name, #city-cond, #temp, #humidity, #wind-speed to white
+  if (time >= 18 || time < 6) {
+    $("#date-time").css("color", "white");
+    $("#city-name").css("color", "white");
+    $("#city-cond").css("color", "white");
+    $("#temp").css("color", "white");
+    $("#humidity").css("color", "white");
+    $("#wind-speed").css("color", "white");
+    $('#body').css('background-image', 'url(assets/images/bg-night.jpg)');
+  }
+
+  // change text in td to uppercase
+  $("td").css("text-transform", "uppercase");
+
 });

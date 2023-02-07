@@ -1,12 +1,9 @@
 body {
-  background-color: #f2f2f2;
+  background-image: url(/assets/img/header-bg.jpg);
   font-family: "Roboto", sans-serif;
 }
 
 /* Hero */
-.hero {
-  background: rgb(90, 174, 90);
-}
 
 .title {
   color: whitesmoke;
@@ -21,7 +18,8 @@ body {
 /* Previous Searches */
 
 .table-box {
-  background-color: #a5a6a7;
+  background-color: #4B94CB;
+  border: black solid 2px;
 }
 
 .button.is-danger {
@@ -38,9 +36,23 @@ body {
   min-height: 320px;
 }
 
-#weather {
-  background-color: orangered;
+#submit {
+  background-color: green;
 }
+
+/* change font in td element of #city-list table */
+td {
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#weather {
+/* background of clouds.jpg in assets/img folder with a transparency */
+  background: url(assets/img/clouds.jpg) no-repeat center center fixed;
+  background-size: cover;
+  color: white;
+  padding: 20px;
+}
+
 
 tr {
   margin: 5px;
@@ -54,9 +66,33 @@ td {
 /* 5 Day section */
 
 .card {
-  background-color: #669fee;
+  background-color: #4B94CB;
   margin: 2px;
   min-height: 320px;
+  border-radius: 10px;
+
+}
+
+footer {
+  /* background-image: url(/assets/img/header-bg.jpg); */
+  color: white;
+  padding: 20px;
+  margin-top: 20px;
+  text-align: center;
+  color: black;
+}
+
+footer a {
+  color: red;
+}
+
+footer a:hover {
+  color: green;
+}
+
+footer p {
+  font-size: 20px;
+  font-weight: bold;
 }
 
 /* Media Queries */
