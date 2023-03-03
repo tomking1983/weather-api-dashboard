@@ -1,6 +1,7 @@
 body {
   background-image: url(/assets/img/header-bg.jpg);
   font-family: "Roboto", sans-serif;
+  background-size: cover;
 }
 
 /* Hero */
@@ -101,6 +102,11 @@ footer p {
   .column {
     margin: 2px;
     padding: 0 20px 0 20px;
+  }
+
+  /* background image full width of screen */
+  body {
+    background-size: cover;
   }
 
   .card-content {
